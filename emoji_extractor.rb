@@ -46,14 +46,24 @@ def extract_png(input)
   ofp.close
 end
 
-ttf = File.new("/System/Library/Fonts/Apple Color Emoji.ttf","rb")
-ttf_data = ttf.read
+begin
+  @ttf = File.new("/System/Library/Fonts/Apple Color Emoji.ttc","rb")
+rescue
+  begin
+    @ttf = File.new("/System/Library/Fonts/Apple Color Emoji.ttf","rb")
+  rescue
+    puts "Error: Could not find Apple Color Emoji font file. Exiting"
+    exit
+  end
+end
+
+ttf_data = @ttf.read
 
 pos = 0
 while m = /\211PNG/.match(ttf_data[pos..-1])
   raise "no PNG found" if !m
   pos += m.begin(0) + 1
-  ttf.seek(pos-1)
+  @ttf.seek(pos-1)
 
-  extract_png(ttf)
+  extract_png(@ttf)
 end
